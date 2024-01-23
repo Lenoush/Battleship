@@ -1,4 +1,7 @@
 # Lena OUDJMAN et Salma BASRIR
+
+from src.matrice import create_grid, plot_grid
+
 N = 10
 LIGNES = list(map(chr,range(97,107)))
 COLONNES = [" "] + [str(i) for i in range (N)]
@@ -11,89 +14,9 @@ NOMS = ["Transporteur" , "Cuirassé" , "Croisseur", "Sous-marin", "Destructeur" 
 TAILLES = [5,4,3,3,2]
 
 DICT_LIGNES_INT = {LIGNES[i]:i for i in range(len(LIGNES))}
-#AMELIORATION POSSIBLE :
-    ##Faire en sorte que le soncond tour offert à l'ordi apres un 'touché' ne declenche pas la detruction du bateau
-    #mais juste qu'il touche au hasard une case qui touche celle 'touché'
-    ##Faire des Niveaux de l'ordi : - Facile : Ordi touche que au hasard aprés avoir touché une case
-                                    #- Moyen : Ordi touche au hasard seulement les cases 'prés' de celle touché
-                                    #- Difficile : Comme maintenant 
 
 
-# create_grid() = Matrice vide
-# plot_grid(M) = ""
-# tir(M,pos,flotte) = Matrice
-# random_position() = position (Chiffre/Chiffre)
-# random_orientation() = orientation (h/v)
-# pos_from_string(S) = position (Chiffre/Chiffre)
-# nouveau_bateau(flotte,nom,pos,orientation) = ""
-# presence_bateau(pos,flotte) = Boolean
-# plot_flotte_grid(M,flotte) = Plot_grid(M) en fonction de flotte
-# input_ajout_bateau(flotte,nom) = nouveau_bateau(flotte,nom,posFinale,orientation)
-# id_bateau_at_pos (pos,flotte) = i indice du bateau de la position pos dans flotte
-# init_joueur() = flotte du joueur 
-# init_ia() = flotte de l'ordi
-# tour_ia_random(M,flotte) = tir(M,pos,flotte)
-# tour_joueur (nom,M,flotte) = tir(M,pos,flotte)
-# tour_ia_better_random(M, flotte) = tour_ia_random(M,flotte)
-# test_fin_partie(Nom, M, flotte, nb_tour) = (Nom," a gagné en  ",nb_tour," tours")
 
-# Creation Matrice Vide ( avec seulemnt des points )
-def create_grid() :
-    matrice = []
-    for i in range(N) :
-        l =  []
-        for j in range(N) :
-            l.append(VIDE)
-        matrice.append(l)
-    return(matrice)
-
-# Transforme une Matrice lambda en grille a Jouer 
-def plot_grid(M) :
-    PetiteListe = []
-    L = [COLONNES] #Les chiffres de la Grille     #L est une liste de liste
-    VarIncrementé = 1
-    for i in LIGNES : #i prend la valeur des lettres entre a et j
-        PetiteListe = [i] + M[LIGNES.index(i)] 
-        L.append(PetiteListe)
-    for i in L :
-        for j in i :
-            if VarIncrementé % 11 == 0 :
-                VarIncrementé = VarIncrementé +1
-                print ( j , end=" \n")
-            else :
-                VarIncrementé = VarIncrementé +1
-                print ( j , end =" ")
-    return ""
-
-# Fonction permettant de tirer a la postion pos dans la matrice M, elle retourne la matrice.
-def tir (M,pos,flotte,nom) :
-    indice = id_bateau_at_pos(pos,flotte)
-    pos2 = string_from_pos(pos)
-    
-    if M[pos[0]][pos[1]] != VIDE :
-        print ("FALSE : Cette case ",pos2," a deja ete attaqué" )
-    else :
-        print ("TRUE : Cette case" ,pos2, "n'a pas encore ete attaqué" )
-        if presence_bateau(pos,flotte) == False : #Si la case est libre, le tir est manqué.
-            M[pos[0]][pos[1]] = EAU
-            print ("MANQUE, Dommage")
-            plot_grid(M)
-        elif presence_bateau(pos,flotte) == True : #Si la case n'est pas libre, le tir est Reussi.
-            M[pos[0]][pos[1]] = TOUCHE
-            print ("TOUCHE, Bravo")
-            flotte[indice]["cases touchées"] = flotte[indice]["cases touchées"] + 1 
-            if (flotte[indice]["taille"]) == (flotte[indice]["cases touchées"]) : #Si True , Tous le bateau a été detruit
-                print ("TOUCHÉ-COULÉ : FELICITATION VOUS AVEZ COULÉ LE BATEAU" ,flotte[indice]["nom"])
-                for i in flotte[indice]["pos"] :
-                    M[i[0]][i[1]] = DETRUIT #Toutes les positions du bateau en Question passe de TOUCHE à DETRUIT
-                plot_grid(M)
-                flotte.pop(indice) #On enleve le bateau detriut de la liste des bateaux OK
-            else : #Si le tir est Reussi mais que le bateau n'est pas detruit alors l'IA ou le Joueur qui a tiré peux rejouer
-                if nom == 'IA' : tour_ia_better_random(M, flotte)
-                elif nom == 'Joueur' :
-                    plot_grid(M)
-                    tour_joueur(M,flotte)
-    return M 
 
 # Creation de position aleatoire Pour L'IA
 from random import randint
@@ -114,10 +37,6 @@ def pos_from_string(S) :
             return (ord(S[0])-97,int(S[1])) #On utlise ici le code ASCII des lettres Minuscules (ex: ASCII de 'a' = 97 donc 'a2' renvoie '02' )
 
 
-
-# Transformation d'une position "chiffre/chiffre" en position "lettre/chiffre"
-def string_from_pos(S) :
-    return(chr(S[0]+97),int(S[1]))
 
 
 
@@ -145,13 +64,7 @@ def nouveau_bateau(flotte,nom,pos,orientation):
         flotte.append(d)
     else : return ""
 
-#Verifie si la position pos est deja dans la flotte.
-def presence_bateau(pos,flotte):
-    for i in range (len(flotte)):
-        for j in (flotte[i]["pos"]) :
-            if pos == j :
-                return True #Il y a deja un bateau sur cette case
-    return False #La case est libre
+
                 
 #Fonction en plus pour etre sur le bateau qu'on souhaite ajouter ne croise pas un autre bateau deja present dans la flotte.
 def presence_bateau_totale(pos,orientation,flotte,nom):
@@ -198,12 +111,7 @@ def input_ajout_bateau(flotte,nom):
         return nouveau_bateau(flotte,nom,posFinale,orientation)
     else : print ("Votre bateau %s de taille %s , d'orientation %s et de position principale %s ne peux etre mis car il croise un autre bateau de vous. Merci de recommencer" %(nom,TAILLES[indiceTaille],orientation,pos))
 
-#Fonction qui indique l'indice du bateau,dont la position fait partie, dans la liste flotte 
-def id_bateau_at_pos (pos,flotte) :
-    for i in range (len(flotte)):
-        for j in (flotte[i]["pos"]) :
-            if pos == j :
-                return i
+
             
 #Fonction en plus qui renvoie l'indice de la taille. 
 def id_taille_Nom(nom) :
@@ -365,15 +273,3 @@ def deux_joueurs() :
             MatriceJ1 = tour_joueur(MatriceJ1,FlotteJoueur1)
             hide()
             
-def Choix() :
-    NbDeJoueur = input("Voulez-Vous jouer contre l'ordi (mettre '1') ou contre un autre joueur (mettre '2') ? ")
-    while (NbDeJoueur != '1') and (NbDeJoueur != '2') :
-        NbDeJoueur = input("Voulez-Vous jouer contre l'ordi ou contre un autre joueur ? Merci de repondre par ordi ou joueur : ")
-    if (NbDeJoueur == '1') :
-        print("Vous avez choisie de joueur contre une IA.")
-        return joueur_vs_ia()
-    elif (NbDeJoueur == '2') :
-        print("Vous avez choisie de joueur contre un autre joueur.")
-        return deux_joueurs()
-    
-Choix()
