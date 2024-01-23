@@ -1,7 +1,7 @@
 from initialisation import init_ia, init_joueur
 from matrice import plot_flotte_grid, plot_grid, create_grid
 from attaque import tour_joueur, tour_ia_random, tour_ia_better_random
-from utils import PetitHide, test_fin_partie, hide
+from utils import PetitHide, check_fin_partie, hide
 
 #Fonction qui fait jouer un jouer x contre l'IA, chacun tire une fois l'un apres l'autre
 def joueur_vs_ia():
@@ -18,7 +18,7 @@ def joueur_vs_ia():
     print("\x1b[0mAu tour de l'IA d'attaquer.")
     J = tour_ia_random(create_grid(),FlotteJoueur)
     PetitHide()
-    while (test_fin_partie('Ordi', J, FlotteJoueur, nb_tour) == False) :
+    while (check_fin_partie('Ordi', J, FlotteJoueur, nb_tour) == False) :
         nb_tour = nb_tour +1
         print("\x1b[0;31mVotre flotte ",NomJoueur, " : ")
         plot_flotte_grid(create_grid(),FlotteJoueur)
@@ -29,7 +29,7 @@ def joueur_vs_ia():
         plot_grid(M)
         M = tour_joueur(M,FlotteIA)
         PetitHide()
-        if (test_fin_partie(NomJoueur, M, FlotteIA, nb_tour) == False) :
+        if (check_fin_partie(NomJoueur, M, FlotteIA, nb_tour) == False) :
             print("\x1b[0mAu tour de l'IA d'attaquer.")
             J = tour_ia_better_random(J,FlotteJoueur) 
             PetitHide()
@@ -62,7 +62,7 @@ def deux_joueurs() :
     plot_grid(create_grid())
     MatriceJ1 = tour_joueur(create_grid(),FlotteJoueur1)
     hide()
-    while (test_fin_partie(NomJoueur2, MatriceJ1, FlotteJoueur1, nb_tour) == False) :
+    while (check_fin_partie(NomJoueur2, MatriceJ1, FlotteJoueur1, nb_tour) == False) :
         nb_tour = nb_tour +1
         print("\x1b[0;31mVotre flotte ",NomJoueur1, " : ")
         plot_flotte_grid(create_grid(),FlotteJoueur1)
@@ -72,7 +72,7 @@ def deux_joueurs() :
         print (NomJoueur1, " Merci de jouer. Il vous reste %d bateaux à detruire." %(len(FlotteJoueur2)))
         plot_grid(MatriceJ2)
         MatriceJ2 = tour_joueur(MatriceJ2,FlotteJoueur2)
-        if (test_fin_partie(NomJoueur1, MatriceJ2, FlotteJoueur2, nb_tour) == False) :
+        if (check_fin_partie(NomJoueur1, MatriceJ2, FlotteJoueur2, nb_tour) == False) :
             hide()
             print("\x1b[0;34mVotre flotte ",NomJoueur2," : ")
             plot_flotte_grid(create_grid(),FlotteJoueur2)

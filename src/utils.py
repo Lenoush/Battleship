@@ -51,7 +51,7 @@ def hide():
         print (" ")
 
 #Fonction qui test si un jour a gagne la partie ( fonction qui se verifie a CHAQUE tour)
-def test_fin_partie(Nom, M, flotte, nb_tour):
+def check_fin_partie(Nom, M, flotte, nb_tour):
     if (len(flotte))==0:
         print ("\x1b[4;31m",Nom," à gagné en ",nb_tour," tours")
         exit()

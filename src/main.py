@@ -11,4 +11,5 @@ def Choix() :
         print("Vous avez choisie de joueur contre un autre joueur.")
         return deux_joueurs()
     
-Choix()
+if __name__ == "__main__":
+    Choix()
