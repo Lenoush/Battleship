@@ -1,0 +1,10 @@
+
+
+# IDE 
+.vscode/*
+
+# Tests
+
+# Code
+
+**/__pycache__/
