@@ -22,7 +22,7 @@ pip install -r requirements.txt
 
 Exécutez le jeu :
 ```
-python main.py
+python src/main.py
 ```
 
 # Fonctionnalités
