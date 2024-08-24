@@ -1,42 +1,51 @@
+from typing import List
 
 N = 10
-COLONNES = [" "] + [str(i) for i in range (N)]
-VIDE = "."
-BATEAU = "#"
+COLUMNS = [" "] + [str(i) for i in range(N)]
+EMPTY = "."
+SHIP = "#"
 
-# Creation Matrice Vide ( avec seulement des points )
-def create_grid() :
-    matrice = []
-    for i in range(N) :
-        l =  []
-        for j in range(N) :
-            l.append(VIDE)
-        matrice.append(l)
-    return(matrice)
+def create_grid() -> List[List[str]]:
+    """
+    Creates an empty grid filled with dots.
+    
+    Returns:
+        List[List[str]]: A 2D list representing the grid, filled with EMPTY.
+    """
+    return [[EMPTY for _ in range(N)] for _ in range(N)]
 
-# Transforme une Matrice lambda en grille a Jouer 
-def plot_grid(matrice) :
-    PetiteList = []
-    LIGNES = list(map(chr,range(97,107)))
-    GrandeList = [COLONNES] 
-    VarIncrementé = 1
+def plot_grid(matrix: List[List[str]]) -> None:
+    """
+    Displays the grid in a user-friendly format.
+    
+    Args:
+        matrix (List[List[str]]): The grid to display.
+    
+    Returns:
+        None
+    """
+    rows = list(map(chr, range(97, 107))) 
+    header = COLUMNS
+    print(" ".join(header))  
 
-    for i in LIGNES :
-        PetiteList = [i] + matrice[LIGNES.index(i)] 
-        GrandeList.append(PetiteList)
-    for i in GrandeList :
-        for j in i :
-            if VarIncrementé % 11 == 0 :
-                VarIncrementé = VarIncrementé +1
-                print ( j , end=" \n")
-            else :
-                VarIncrementé = VarIncrementé +1
-                print ( j , end =" ")
-    return ""
+    for i, row in enumerate(rows):
+        line = [row] + matrix[i]  
+        print(" ".join(line))  
 
-#Transforme une Matrice lambda en grille a Jouer Decouverte en fonction de la flotte du joueur
-def plot_flotte_grid(M,flotte):
-    for i in range (len(flotte)):
-        for pos in (flotte[i]["pos"]) :
-            M[pos[0]][pos[1]] = BATEAU
-    return (plot_grid(M))
+
+def plot_flotte_grid(matrix: List[List[str]], fleet: List[dict]) -> None:
+    """
+    Updates the grid to display the player's fleet.
+    
+    Args:
+        matrix (List[List[str]]): The grid to update.
+        fleet (List[dict]): A list of ships, each with a "pos" key containing their positions.
+    
+    Returns:
+        None
+    """
+    for ship in fleet:
+        for pos in ship["pos"]:
+            matrix[pos[0]][pos[1]] = SHIP  
+    plot_grid(matrix)  
+

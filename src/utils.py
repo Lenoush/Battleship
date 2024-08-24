@@ -1,59 +1,147 @@
-
-import time 
+import time
+from random import randint, choice
+import re
+from typing import Tuple, List
+from enum import Enum
 
 N = 10
-NOMS = ["Transporteur" , "Cuirassé" , "Croisseur", "Sous-marin", "Destructeur" ]
+GRID_SIZE = 10
+HIDE_DURATION_SHORT = 5
+HIDE_DURATION_LONG = 7
+CLEAR_LINES = 100
 
-# Transformation d'une position "chiffre/chiffre" en position "lettre/chiffre"
-def string_from_pos(S) :
-    return(chr(S[0]+97),int(S[1]))
 
-# Creation de position aleatoire Pour L'IA
-from random import randint
-def random_position() :
-    return (randint(0,N-1), randint(0,N-1))
+class ShipName(Enum):
+    CARRIER = "Carrier"
+    BATTLESHIP = "Battleship"
+    CRUISER = "Cruiser"
+    SUBMARINE = "Submarine"
+    DESTROYER = "Destroyer"
 
-# Fonction en plus : Choisi aleatoirement une orientation Pour l'IA
-from random import choice
-def random_orientation() :
-    orientation = ["v","h"] 
-    return choice(orientation)
 
-# Transformation d'une position "lettre/chiffre" en position "chiffre/chiffre"
-import re
-def pos_from_string(S) :
-    if bool(re.match("^[a-j]$",S[0])) :
-        if bool(re.match("^[0-9]$",S[1])) :
-            return (ord(S[0])-97,int(S[1])) #On utlise ici le code ASCII des lettres Minuscules (ex: ASCII de 'a' = 97 donc 'a2' renvoie '02' )
+NAMES = [ship.value for ship in ShipName]
 
-#Fonction qui renvoie l'indice de la taille. 
-def id_taille_Nom(nom) :
-    for i in range (len(NOMS)) :
-        if NOMS[i] == nom :
-            return i
 
-#Fonction qui attend 5 second avant de passer a la suite du code
-def PetitHide():
-    print("\x1b[1;30mVous avez 5 secondes pour examiner le jeu.")
-    time.sleep(5)
-    for i in range(5) :
-        print (" ")
+def string_from_pos(pos: Tuple[int, int]) -> Tuple[str, int]:
+    """
+    Converts a "number/number" position to a "letter/number" position.
 
-#Fonction qui attend 5 puis 7 seconde pour passer au prochain adversaire 
-def hide():
-    print("\x1b[1;30mVous avez 7 secondes pour examiner votre jeu.")
-    time.sleep(7)
-    for i in range(100) :
-        print (" ")
-    print("Veuillez donner l'ordinateur à votre adversaire, vous avez 5 secondes.")
-    time.sleep(5)
-    for i in range(100) :
-        print (" ")
+    Args:
+        pos (Tuple[int, int]): A position in the format (row, column), where both are integers.
 
-#Fonction qui test si un jour a gagne la partie ( fonction qui se verifie a CHAQUE tour)
-def check_fin_partie(Nom, M, flotte, nb_tour):
-    if (len(flotte))==0:
-        print ("\x1b[4;31m",Nom," à gagné en ",nb_tour," tours")
+    Returns:
+        Tuple[str, int]: The position in the format (letter, number).
+    """
+    return chr(pos[0] + 97), pos[1]
+
+
+def random_position() -> Tuple[int, int]:
+    """
+    Generates a random position within the grid.
+
+    Returns:
+        Tuple[int, int]: A random position (row, column) where both are integers within the grid size.
+    """
+    return randint(0, GRID_SIZE - 1), randint(0, GRID_SIZE - 1)
+
+
+def random_orientation() -> str:
+    """
+    Randomly chooses an orientation for the AI's ship placement.
+
+    Returns:
+        str: Either "v" for vertical or "h" for horizontal orientation.
+    """
+    orientations = ["v", "h"]
+    return choice(orientations)
+
+
+def pos_from_string(pos: str) -> Tuple[int, int]:
+    """
+    Converts a "letter/number" position to a "number/number" position.
+
+    Args:
+        pos (str): A position in the format (letter, number), where letter is in 'a-j' and number is in '0-9'.
+
+    Returns:
+        Tuple[int, int]: The position as (row, column).
+
+    Raises:
+        ValueError: If the input string is not in the correct format.
+    """
+    if re.match("^[a-j]$", pos[0]) and re.match("^[0-9]$", pos[1]):
+        return ord(pos[0]) - 97, int(pos[1])
+    raise ValueError(f"Invalid position string: {pos}")
+
+
+def id_size_from_name(name: str) -> int:
+    """
+    Returns the index of the ship's size based on its name.
+
+    Args:
+        name (str): The name of the ship.
+
+    Returns:
+        int: The index corresponding to the ship's size.
+
+    Raises:
+        ValueError: If the ship name is not found in NAMES.
+    """
+    try:
+        return NAMES.index(name)
+    except ValueError:
+        raise ValueError(f"Invalid ship name: {name}")
+
+
+def clear_screen(lines: int = CLEAR_LINES) -> None:
+    """
+    Clears the screen by printing a number of empty lines.
+
+    Args:
+        lines (int): The number of lines to print. Default is 100.
+    """
+    for _ in range(lines):
+        print(" ")
+
+
+def short_hide() -> None:
+    """
+    Pauses the game for 5 seconds, allowing the player to review the board.
+    """
+    print("\x1b[1;30mYou have 5 seconds to review the game.")
+    time.sleep(HIDE_DURATION_SHORT)
+    clear_screen()
+
+
+def long_hide() -> None:
+    """
+    Pauses the game for a total of 12 seconds, 7 seconds for one player to review the board,
+    and 5 seconds for the players to switch.
+    """
+    print("\x1b[1;30mYou have 7 seconds to review your board.")
+    time.sleep(HIDE_DURATION_LONG)
+    clear_screen()
+    print("Please pass the computer to your opponent, you have 5 seconds.")
+    time.sleep(HIDE_DURATION_SHORT)
+    clear_screen()
+
+
+def check_game_end(
+    name: str, grid: List[List[int]], fleet: List[str], turn_count: int
+) -> bool:
+    """
+    Checks if a player has won the game. This function should be called at each turn.
+
+    Args:
+        name (str): The name of the player.
+        grid (List[List[int]]): The game grid.
+        fleet (List[str]): The player's fleet, which is a list of remaining ships.
+        turn_count (int): The current turn number.
+
+    Returns:
+        bool: True if the player has won, otherwise False.
+    """
+    if len(fleet) == 0:
+        print(f"\x1b[4;31m{name} won in {turn_count} turns")
         exit()
-        return True
-    else : return False
+    return False
