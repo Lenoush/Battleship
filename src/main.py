@@ -1,7 +1,8 @@
-from jeux import joueur_vs_ia, deux_joueurs
+from jeux import player_vs_ai, two_players
 
 CHOICE_PROMPT = "Do you want to play against the computer (enter '1') or against another player (enter '2')? "
-INVALID_CHOICE_MESSAGE = "Invalid input. Please respond with '1' or '2'."
+DIFFICULTY_PROMPT = "Wich level do you want ? 'd' for difficulty, 'e' for easy : "
+INVALID_CHOICE_MESSAGE = "Invalid input. Retry."
 
 def ask_for_game_mode() -> str:
     """
@@ -16,6 +17,22 @@ def ask_for_game_mode() -> str:
         choice = input(CHOICE_PROMPT)
     return choice
 
+def ask_for_game_difficulty() -> str:
+    """
+    Asks the user to choose a game difficulty: only against the computer.
+    
+    Returns:
+        boolean : 'True' for difficulty, 'False' for easy.
+    """
+    choice = input(DIFFICULTY_PROMPT)
+    while choice not in {'d', 'e'}:
+        print(INVALID_CHOICE_MESSAGE)
+        choice = input(DIFFICULTY_PROMPT)
+    if choice == "d" :
+        print("You choose the difficult level.")
+    else : print("You choose the easy level.")
+    return choice
+
 def start_game(mode: str) -> None:
     """
     Starts the game based on the selected mode.
@@ -26,10 +43,11 @@ def start_game(mode: str) -> None:
     """
     if mode == '1':
         print("You chose to play against an AI.")
-        joueur_vs_ia()
+        level:str = ask_for_game_difficulty()
+        player_vs_ai(level)
     elif mode == '2':
         print("You chose to play against another player.")
-        deux_joueurs()
+        two_players()
 
 def main() -> None:
     """
