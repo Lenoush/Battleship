@@ -34,7 +34,7 @@ def ai_easy_turn(matrix: List[List[str]], fleet: List[Dict[str, any]], exception
 def ai_difficult_turn(matrix: List[List[str]], fleet: List[Dict[str, any]]) -> List[List[str]]:
     """
     Function allowing the AI to choose a position to attack. If a ship is partially hit,
-    the AI continues to attack the surrounding positions. Otherwise, it chooses a random position.
+    the AI continues to attack the surrounding  . Otherwise, it chooses a random position.
 
     Args:
         matrix (List[List[str]]): The game grid.

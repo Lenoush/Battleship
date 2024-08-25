@@ -4,7 +4,7 @@ from attaque import player_turn, ai_easy_turn, ai_difficult_turn
 from utils import short_hide, check_game_end, long_hide
 from typing import List
 
-#Fonction qui fait jouer un jouer x contre l'IA, chacun tire une fois l'un apres l'autre
+
 def player_vs_ai(level: str) -> None:
     """
     Function that runs a game between a player and the AI. Each takes turns firing.
